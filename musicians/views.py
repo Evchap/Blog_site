@@ -7,17 +7,11 @@ def index(request):
 
 
 def categories(request, catid):
-    # if request.GET:
-    #     print(request.GET)
-    # if request.POST:
-    #     print(request.POST)
     return HttpResponse(f"<h1>Статьи по категориям</h1><p>{catid}</p>")
+
 
 def archive(request, year):
     if int(year) > 2022:
-        # raise Http404()
-        # return redirect('/') # 302 redirect временное перемещение на страницу
-        # return redirect('/', permanent=True) # 301 redirect постоянное перемещение
         return redirect('home', permanent=True)
 
 def pageNotFound(request, exception):
