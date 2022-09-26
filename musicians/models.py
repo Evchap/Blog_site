@@ -1,6 +1,7 @@
 from django.db import models
 
 class Musicians(models.Model):
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
     photo = models.ImageField(upload_to="photos/%Y/%m/%d/")
@@ -10,8 +11,5 @@ class Musicians(models.Model):
     time_update = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=True)
 
-
-# $ python -m pip install Pillow
-# $ python manage.py makemigrations
-# $ python manage.py sqlmigrate musicians 0001 # посмотреть миграцию
-# $ python manage.py migrate
+    def __str__(self):
+        return self.title

@@ -1,5 +1,3 @@
-
-
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
@@ -22,17 +20,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# https://github.com/selfedu-rus/django-lessons.git
-
-
-
-# --------создание проекта-----------
-# $ pip install django
-# $ django-admin startproject blogsite
-# $ pip list
-# $ django-admin # просмотр команд django
-
 
 
 # HOW TO RUN
