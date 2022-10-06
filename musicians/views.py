@@ -5,16 +5,37 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 
 from .models import * # импорт моделей
 
-menu = ["О сайте", "Добавить статью", "Обратная связь", "Войти"]
+menu = [{'title': "О сайте", 'url_name': 'about'},
+        {'title': "Добавить статью", 'url_name': 'add_page'},
+        {'title': "Обратная связь", 'url_name': 'contact'},
+        {'title': "Войти", 'url_name': 'login'}
+]
+
 
 def index(request):
-    posts = Musicians.objects.all()   # параметр обязательно должен быть ссылкой request, а второй – путь к файлу шаблона
-    return render(request, 'musicians/index.html', {'posts': posts, 'menu': menu, 'title': 'Главная страница'})
+    posts = Musicians.objects.all()
+    context = {
+        'posts': posts,
+        'menu': menu,
+        'title': 'Главная страница'
+    }
+
+    return render(request, 'musicians/index.html', context=context)
 
 def about(request):
     return render(request, 'musicians/about.html', {'menu': menu, 'title': 'О сайте'})
 
 
+def addpage(request):
+    return HttpResponse("Добавление статьи")
+
+
+def contact(request):
+    return HttpResponse("Обратная связь")
+
+
+def login(request):
+    return HttpResponse("Авторизация")
 def categories(request, catid):
     if request.POST:
         print(request.POST)
