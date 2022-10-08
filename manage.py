@@ -26,3 +26,7 @@ if __name__ == '__main__':
 # $ python manage.py runserver
 # http://127.0.0.1:8000/
 # http://127.0.0.1:8000/admin/
+
+# superuser: admin
+# email: admin@coolsite.ru
+# password: 12345

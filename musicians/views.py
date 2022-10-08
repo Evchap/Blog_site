@@ -37,9 +37,9 @@ def addpage(request):
 def contact(request):
     return HttpResponse("Обратная связь")
 
-
 def login(request):
     return HttpResponse("Авторизация")
+
 def categories(request, catid):
     if request.POST:
         print(request.POST)
@@ -62,6 +62,7 @@ def show_post(request, post_id):
 def show_category(request, cat_id):
     posts = Musicians.objects.filter(cat_id=cat_id)
     cats = Category.objects.all()
+
     if len(posts) == 0:
         raise Http404()
 
