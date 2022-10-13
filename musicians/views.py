@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.views.generic import ListView, DetailView
 
 from .forms import *
 from .models import * # импорт моделей
@@ -11,21 +12,20 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Войти", 'url_name': 'login'}
 ]
 
+class MusiciansHome(ListView):
+    model = Musicians
+    template_name = 'musicians/index.html'
+    context_object_name = 'posts'
 
-def index(request):
-    posts = Musicians.objects.all()
-#    cats = Category.objects.all()
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = menu
+        context['title'] = 'Главная страница'
+        context['cat_selected'] = 0
+        return context
 
-    context = {
-        'posts': posts,
-#        'cats': cats,
-        'menu': menu,
-        'title': 'Главная страница',
-        'cat_selected': 0,
-    }
-
-    return render(request, 'musicians/index.html', context=context)
-
+    def get_queryset(self):
+        return Musicians.objects.filter(is_published=True)
 
 def about(request):
     return render(request, 'musicians/about.html', {'menu': menu, 'title': 'О сайте'})
@@ -87,20 +87,19 @@ def show_post(request, post_slug):
 
     return render(request, 'musicians/post.html', context=context)
 
-def show_category(request, cat_id):
-    posts = Musicians.objects.filter(cat_id=cat_id)
-#    cats = Category.objects.all()
 
-    if len(posts) == 0:
-        raise Http404()
+class MusiciansCategory(ListView):
+    model = Musicians
+    template_name = 'musicians/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
 
-    context = {
-        'posts': posts,
-#        'cats': cats,
-        'menu': menu,
-        'title': 'Главная страница',
-        'cat_selected': cat_id,
-    }
+    def get_queryset(self):
+        return Musicians.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
-    return render(request, 'musicians/index.html', context=context)
-
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Категория - ' + str(context['posts'][0].cat)
+        context['menu'] = menu
+        context['cat_selected'] = context['posts'][0].cat_id
+        return context
