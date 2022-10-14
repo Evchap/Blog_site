@@ -6,6 +6,8 @@ from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import *
 from .models import * # импорт моделей
+from .utils import *
+
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
@@ -13,17 +15,15 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Войти", 'url_name': 'login'}
 ]
 
-class MusiciansHome(ListView):
+class MusiciansHome(DataMixin,ListView):
     model = Musicians
     template_name = 'musicians/index.html'
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Главная страница'
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context(title="Главная страница")
+        return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return Musicians.objects.filter(is_published=True)
@@ -32,32 +32,15 @@ def about(request):
     return render(request, 'musicians/about.html', {'menu': menu, 'title': 'О сайте'})
 
 
-# def addpage(request):
-# #    return HttpResponse("Добавление статьи")
-#     form = AddPostForm()
-#     return render(request, 'musicians/addpage.html', {'form': menu, 'title': 'Добавление статьи', 'form': form})
-
-class AddPage(CreateView):
+class AddPage(DataMixin,CreateView):
     form_class = AddPostForm
     template_name = 'musicians/addpage.html'
     success_url = reverse_lazy('home')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Добавление статьи'
-        context['menu'] = menu
-        return context
-
-
-# def addpage(request):
-#     if request.method == 'POST':
-#         form = AddPostForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('home')
-#     else:
-#         form = AddPostForm()
-#     return render(request, 'musicians/addpage.html', {'form': menu, 'title': 'Добавление статьи', 'form': form})
+        c_def = self.get_user_context(title="Добавление статьи")
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 def contact(request):
@@ -82,10 +65,7 @@ def pageNotFound(request, exception):
     return HttpResponseNotFound('<h1>Страница не найдена</h1>')
 
 
-# def show_post(request, post_id):
-#     return HttpResponse(f"Отображение статьи с id = {post_id}")
-
-class ShowPost(DetailView):
+class ShowPost(DataMixin, DetailView):
     model = Musicians
     template_name = 'musicians/post.html'
     slug_url_kwarg = 'post_slug'
@@ -93,27 +73,11 @@ class ShowPost(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = context['post']
-        context['menu'] = menu
-        return context
+        c_def = self.get_user_context(title=context['post'])
+        return dict(list(context.items()) + list(c_def.items()))
 
 
-
-# def show_post(request, post_slug):
-# #     post = get_object_or_404(Musicians, pk=post_id)
-#     post = get_object_or_404(Musicians, slug=post_slug)
-#
-#     context = {
-#         'post': post,
-#         'menu': menu,
-#         'title': post.title,
-#         'cat_selected': 1,
-#     }
-#
-#     return render(request, 'musicians/post.html', context=context)
-
-
-class MusiciansCategory(ListView):
+class MusiciansCategory(DataMixin, ListView):
     model = Musicians
     template_name = 'musicians/index.html'
     context_object_name = 'posts'
@@ -124,7 +88,7 @@ class MusiciansCategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Категория - ' + str(context['posts'][0].cat)
-        context['menu'] = menu
-        context['cat_selected'] = context['posts'][0].cat_id
-        return context
+        c_def = self.get_user_context(title='Категория - ' + str(context['posts'][0].cat),
+                                      cat_selected=context['posts'][0].cat_id)
+
+        return dict(list(context.items()) + list(c_def.items()))
