@@ -1,8 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import *
 from .models import * # импорт моделей
@@ -28,14 +30,17 @@ class MusiciansHome(DataMixin,ListView):
     def get_queryset(self):
         return Musicians.objects.filter(is_published=True)
 
+
 def about(request):
     return render(request, 'musicians/about.html', {'menu': menu, 'title': 'О сайте'})
 
 
-class AddPage(DataMixin,CreateView):
+class AddPage(LoginRequiredMixin, DataMixin,CreateView):
     form_class = AddPostForm
     template_name = 'musicians/addpage.html'
     success_url = reverse_lazy('home')
+    login_url = reverse_lazy('home')
+    raise_exception = True
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
