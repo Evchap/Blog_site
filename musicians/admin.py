@@ -17,3 +17,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(Musicians, MusiciansAdmin)
 admin.site.register(Category, CategoryAdmin)
+
+admin.site.site_title = 'Админ-панель сайта'
+admin.site.site_header = 'Админ-панель сайта'
