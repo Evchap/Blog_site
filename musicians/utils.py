@@ -1,5 +1,5 @@
 from django.db.models import Count
-
+from django.core.cache import cache
 from .models import *
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
@@ -12,6 +12,10 @@ class DataMixin:
     paginate_by = 2
     def get_user_context(self, **kwargs):
         context = kwargs
+        cats = cache.get('cats')
+        if not cats:
+            cats = Category.objects.annotate(Count('musicians'))
+            cache.set('cats', cats, 60)
         cats = Category.objects.annotate(Count('musicians'))
 
         user_menu = menu.copy()
